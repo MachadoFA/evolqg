@@ -5,16 +5,16 @@
 #' matrix in to the ret.dim.2 components of the second matrix.
 #'
 #' @param cov.x Single covariance matrix ou list of covariance matrices.
-#' If cov.x is a single matrix is suplied, it is compared to cov.y.
-#' If cov.x is a list of matrices is suplied and no cov.y is suplied, all matrices
+#' If cov.x is a single matrix is supplied, it is compared to cov.y.
+#' If cov.x is a list of matrices is supplied and no cov.y is supplied, all matrices
 #' are compared between each other.
-#' If cov.x is a list of matrices and a single cov.y matrix is suplied, all matrices in list are compared to it.
-#' @param ... aditional arguments passed to other methods
+#' If cov.x is a list of matrices and a single cov.y matrix is supplied, all matrices in list are compared to it.
+#' @param ... additional arguments passed to other methods
 #' @param cov.y First argument is compared to cov.y.
 #' If cov.x is a list, every element in cov.x is projected in cov.y.
 #' @param ret.dim.1 number of retained dimensions for first matrix in comparison, default for nxn matrix is n/2-1
 #' @param ret.dim.2 number of retained dimensions for second matrix in comparison, default for nxn matrix is n/2-1
-#' @param parallel if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.
+#' @param parallel if TRUE computations are done in parallel. Some foreach back-end must be registered, like doParallel or doMC.
 #' @param full.results if FALSE returns only total variance, if TRUE also per PC variance.
 #' @return Ratio of projected variance to total variance, and ratio of projected total in each PC
 #' @references Krzanowski, W. J. (1979). Between-Groups Comparison of Principal
@@ -31,6 +31,7 @@
 #' c2 <- RandomMatrix(10)
 #' KrzProjection(c1, c2)
 #'
+#'\donttest{
 #' m.list <- RandomMatrix(10, 3)
 #' KrzProjection(m.list)
 #' KrzProjection(m.list, full.results = TRUE)
@@ -39,15 +40,13 @@
 #'
 #' KrzProjection(m.list, c1)
 #' KrzProjection(m.list, c1, full.results = TRUE)
-#' 
+#' }
+#' \dontrun{
 #' #Multiple threads can be used with some foreach backend library, like doMC or doParallel
-#' #library(doParallel)
-#' ##Windows:
-#' #cl <- makeCluster(2)
-#' #registerDoParallel(cl)
-#' ##Mac and Linux:
-#' #registerDoParallel(cores = 2)
-#' #KrzProjection(m.list, parallel = TRUE)
+#' library(doMC)
+#' registerDoMC(cores = 2)
+#' KrzProjection(m.list, parallel = TRUE)
+#' }
 #' @keywords matrixcomparison
 #' @keywords matrixcorrelation
 #' @keywords Krzanowski

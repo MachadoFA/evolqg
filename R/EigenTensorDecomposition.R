@@ -4,7 +4,7 @@
 #'
 #' @param matrices k x k x m array of m covariance matrices with k traits;
 #' @param return.projection Should we project covariance matrices into estimated eigentensors? Defaults to TRUE
-#' @param ... aditional arguments for methods
+#' @param ... additional arguments for methods
 #' @return List with the following components:
 #' @return mean mean covariance matrices used to center the sample (obtained from \code{\link{MeanMatrix}})
 #' @return mean.sqrt square root of mean matrix (saved for use in other functions, 
@@ -27,7 +27,6 @@
 #' @seealso \code{\link{ProjectMatrix}}, \code{\link{RevertMatrix}}
 #' 
 #' @examples 
-#' \dontrun{
 #' data(dentus)
 #'
 #' dentus.vcv <- daply (dentus, .(species), function(x) cov(x[,-5]))
@@ -37,13 +36,15 @@
 #' dentus.etd <- EigenTensorDecomposition(dentus.vcv, TRUE)
 #'
 #' # Plot some results
-#' par(mfrow = c(1, 2))
+#' oldpar <- par(mfrow = c(1,2))  
 #' plot(dentus.etd $ values, pch = 20, type = 'b', ylab = 'Eigenvalue')
 #' plot(dentus.etd $ projection [, 1:2], pch = 20, 
 #'      xlab = 'Eigentensor 1', ylab = 'Eigentensor 2')
 #' text(dentus.etd $ projection [, 1:2],
 #'      labels = rownames (dentus.etd $ projection), pos = 2)
+#' par(oldpar)  
 #' 
+#' \donttest{
 #' # we can also deal with posterior samples of covariance matrices using plyr
 #' 
 #' dentus.models <- dlply(dentus, .(species), 
@@ -59,13 +60,12 @@
 #' dentus.post.etd <- alply(dentus.post.vcv, 4, EigenTensorDecomposition)
 #' 
 #' # which would allow us to observe the posterior 
-#' # distribution of associated eigenvalues, for instance
+#' # distribution of associated eigenvalues, for example
 #' dentus.post.eval <- laply (dentus.post.etd, function (L) L $ values)
 #' 
 #' boxplot(dentus.post.eval, xlab = 'Index', ylab = 'Value', 
 #'         main = 'Posterior Eigenvalue Distribution')
 #' }
-#' @importFrom matrixcalc frobenius.prod
 #' @importFrom expm logm sqrtm
 #'
 #' @rdname EigenTensorDecomposition 
@@ -114,7 +114,7 @@ EigenTensorDecomposition.default <- function (matrices, return.projection = TRUE
              function (x)
              {
                eigen.mat <- diag (x [1:n.traits])
-               eigen.mat [upper.tri (eigen.mat)] <-
+               eigen.mat [lower.tri (eigen.mat)] <-
                  x [(n.traits+1):length (x)] / sqrt (2)
                eigen.mat <- eigen.mat + t(eigen.mat)
                diag (eigen.mat) <- diag (eigen.mat) / 2

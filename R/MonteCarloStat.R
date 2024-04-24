@@ -1,7 +1,7 @@
 #' Parametric population samples with covariance or correlation matrices
 #'
 #' Using a multivariate normal model, random populations are generated
-#' using the suplied covariance matrix. A statistic is calculated on the
+#' using the supplied covariance matrix. A statistic is calculated on the
 #' random population and compared to the statistic calculated on the
 #' original matrix. 
 #'
@@ -10,7 +10,7 @@
 #' @param iterations Number of random populations
 #' @param ComparisonFunc Comparison functions for the calculated statistic
 #' @param StatFunc Function for calculating the statistic
-#' @param parallel if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.
+#' @param parallel if TRUE computations are done in parallel. Some foreach back-end must be registered, like doParallel or doMC.
 #' @details Since this function uses multivariate normal model to generate populations, only covariance matrices should be used.
 #' @return returns the mean repeatability, or mean value of comparisons from samples to original statistic.
 #' @author Diogo Melo, Guilherme Garcia
@@ -30,17 +30,22 @@
 #' r2.dist <- MonteCarloR2(RandomMatrix(10, 1, 1, 10), 30)
 #' quantile(r2.dist)
 #' 
+#' \dontrun{
 #' #Multiple threads can be used with some foreach backend library, like doMC or doParallel
-#' #library(doParallel)
+
 #' ##Windows:
 #' #cl <- makeCluster(2)
 #' #registerDoParallel(cl)
+#' 
 #' ##Mac and Linux:
-#' #registerDoParallel(cores = 2)
-#' #MonteCarloStat(cov.matrix, sample.size = 30, iterations = 100,
-#' #               ComparisonFunc = function(x, y) KrzCor(x, y)[1],
-#' #               StatFunc = cov,
-#' #               parallel = TRUE)
+#' library(doParallel)
+#' registerDoParallel(cores = 2)
+#' 
+#' MonteCarloStat(cov.matrix, sample.size = 30, iterations = 100,
+#'                ComparisonFunc = function(x, y) KrzCor(x, y)[1],
+#'                StatFunc = cov,
+#'                parallel = TRUE)
+#' }
 #' @keywords parametricsampling
 #' @keywords montecarlo
 #' @keywords repeatability
@@ -100,24 +105,26 @@ doComparisonMC <- function (x, ComparisonFunc, StatFunc, cov.matrix, sample.size
 #' cov.matrix <- RandomMatrix(5, 1, 1, 10)
 #'
 #' MonteCarloRep(cov.matrix, sample.size = 30, RandomSkewers, iterations = 20)
+#' 
+#'\donttest{
 #' MonteCarloRep(cov.matrix, sample.size = 30, RandomSkewers, num.vectors = 100, 
 #'               iterations = 20, correlation = TRUE)
 #' MonteCarloRep(cov.matrix, sample.size = 30, MatrixCor, correlation = TRUE)
 #' MonteCarloRep(cov.matrix, sample.size = 30, KrzCor, iterations = 20)
 #' MonteCarloRep(cov.matrix, sample.size = 30, KrzCor, correlation = TRUE)
 #'
+#'
 #' #Creating repeatability vector for a list of matrices
 #' mat.list <- RandomMatrix(5, 3, 1, 10)
 #' laply(mat.list, MonteCarloRep, 30, KrzCor, correlation = TRUE)
+#'}
 #'
-#' ##Multiple threads can be used with doMC library
-#' #library(doParallel)
-#' ##Windows:
-#' #cl <- makeCluster(2)
-#' #registerDoParallel(cl)
-#' ##Mac and Linux:
-#' #registerDoParallel(cores = 2)
-#' #MonteCarloRep(cov.matrix, 30, RandomSkewers, iterations = 100, parallel = TRUE)
+#' \dontrun{
+#' #Multiple threads can be used with some foreach backend library, like doMC or doParallel
+#' library(doMC)
+#' registerDoMC(cores = 2)
+#' MonteCarloRep(cov.matrix, 30, RandomSkewers, iterations = 100, parallel = TRUE)
+#' }
 #' @keywords parametricsampling
 #' @keywords montecarlo
 #' @keywords repeatability

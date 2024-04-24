@@ -1,8 +1,9 @@
 test_that("DriftTest returns resonable results",
 {
+  skip_on_cran()
   means <- array(rnorm(40*10), c(10, 40)) 
   means.list <- alply(means, 1)
-  cov.matrix <- RandomMatrix(40, 1, 1, 10)
+  cov.matrix <- RandomMatrix(40, 1, 1, 10, LKJ = FALSE)
   test.array <- DriftTest(means, cov.matrix, FALSE)
   test.list <- DriftTest(means.list, cov.matrix, FALSE)
   expect_equal(test.array[-6], test.list[-6])

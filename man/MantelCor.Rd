@@ -13,11 +13,24 @@
 \usage{
 MantelCor(cor.x, cor.y, ...)
 
-\method{MantelCor}{default}(cor.x, cor.y, permutations = 1000, ...,
-  landmark.dim = NULL, withinLandmark = FALSE, mod = FALSE)
+\method{MantelCor}{default}(
+  cor.x,
+  cor.y,
+  permutations = 1000,
+  ...,
+  landmark.dim = NULL,
+  withinLandmark = FALSE,
+  mod = FALSE
+)
 
-\method{MantelCor}{list}(cor.x, cor.y = NULL, permutations = 1000,
-  repeat.vector = NULL, parallel = FALSE, ...)
+\method{MantelCor}{list}(
+  cor.x,
+  cor.y = NULL,
+  permutations = 1000,
+  repeat.vector = NULL,
+  parallel = FALSE,
+  ...
+)
 
 \method{MantelCor}{mcmc_sample}(cor.x, cor.y, ..., parallel = FALSE)
 
@@ -25,29 +38,35 @@ MatrixCor(cor.x, cor.y, ...)
 
 \method{MatrixCor}{default}(cor.x, cor.y, ...)
 
-\method{MatrixCor}{list}(cor.x, cor.y = NULL, permutations = 1000,
-  repeat.vector = NULL, parallel = FALSE, ...)
+\method{MatrixCor}{list}(
+  cor.x,
+  cor.y = NULL,
+  permutations = 1000,
+  repeat.vector = NULL,
+  parallel = FALSE,
+  ...
+)
 
 \method{MatrixCor}{mcmc_sample}(cor.x, cor.y, ..., parallel = FALSE)
 }
 \arguments{
 \item{cor.x}{Single correlation matrix or list of correlation matrices.
 
-If single matrix is suplied, it is compared to cor.y.
+If single matrix is supplied, it is compared to cor.y.
 
-If list is suplied and no cor.y is suplied, all matrices
+If list is supplied and no cor.y is supplied, all matrices
 are compared.
 
-If cor.y is suplied, all matrices in list are compared to it.}
+If cor.y is supplied, all matrices in list are compared to it.}
 
 \item{cor.y}{First argument is compared to cor.y.
 Optional if cor.x is a list.}
 
-\item{...}{aditional arguments passed to other methods}
+\item{...}{additional arguments passed to other methods}
 
 \item{permutations}{Number of permutations used in significance calculation.}
 
-\item{landmark.dim}{Used if permutations should be performed mantaining landmark structure in geometric morphomotric data. Either 2 for 2d data or 3 for 3d data. Default is NULL for non geometric morphomotric data.}
+\item{landmark.dim}{Used if permutations should be performed maintaining landmark structure in geometric morphometric data. Either 2 for 2d data or 3 for 3d data. Default is NULL for non geometric morphomotric data.}
 
 \item{withinLandmark}{Logical. If TRUE within-landmark correlations are used in the calculation of matrix correlation. Only used if landmark.dim is passed, default is FALSE.}
 
@@ -55,11 +74,11 @@ Optional if cor.x is a list.}
 
 \item{repeat.vector}{Vector of repeatabilities for correlation correction.}
 
-\item{parallel}{if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.}
+\item{parallel}{if TRUE computations are done in parallel. Some foreach back-end must be registered, like doParallel or doMC.}
 }
 \value{
-If cor.x and cor.y are passed, returns matrix pearson
-correlation and significance via Mantel permutations.
+If cor.x and cor.y are passed, returns matrix Pearson
+correlation coefficient and significance via Mantel permutations.
 
 If cor.x is a list of matrices and cor.y is passed, same as above, but for all matrices in cor.x.
 
@@ -72,7 +91,7 @@ diagonal and repeatabilities returned in diagonal.
 Calculates correlation matrix correlation and significance via Mantel test.
 }
 \note{
-If the significance is not needed, MatrixCor provides the 
+If the significance is not needed, MatrixCor provides the
 correlation and skips the permutations, so it is much faster.
 }
 \examples{
@@ -93,14 +112,12 @@ MantelCor(cor.list, repeat.vector = reps)
 c4 <- RandomMatrix(10)
 MantelCor(cor.list, c4)
 
+\dontrun{
 #Multiple threads can be used with some foreach backend library, like doMC or doParallel
-#library(doParallel)
-##Windows:
-#cl <- makeCluster(2)
-#registerDoParallel(cl)
-##Mac and Linux:
-#registerDoParallel(cores = 2)
-#MantelCor(cor.list, parallel = TRUE) 
+library(doMC)
+registerDoMC(cores = 2)
+MantelCor(cor.list, parallel = TRUE)
+}
 }
 \references{
 http://en.wikipedia.org/wiki/Mantel_test

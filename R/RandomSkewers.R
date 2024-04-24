@@ -3,16 +3,16 @@
 #' Calculates covariance matrix correlation via random skewers
 #'
 #' @param cov.x Single covariance matrix or list of covariance matrices.
-#' If single matrix is suplied, it is compared to cov.y.
-#' If list is suplied and no cov.y is suplied, all matrices
+#' If single matrix is supplied, it is compared to cov.y.
+#' If list is supplied and no cov.y is supplied, all matrices
 #' are compared.
-#' If cov.y is suplied, all matrices in list are compared to it.
+#' If cov.y is supplied, all matrices in list are compared to it.
 #' @param cov.y First argument is compared to cov.y.
 #' Optional if cov.x is a list.
 #' @param num.vectors Number of random vectors used in comparison.
 #' @param repeat.vector Vector of repeatabilities for correlation correction.
-#' @param parallel if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.
-#' @param ... aditional arguments passed to other methods.
+#' @param parallel if TRUE computations are done in parallel. Some foreach back-end must be registered, like doParallel or doMC.
+#' @param ... additional arguments passed to other methods.
 #' @return
 #' If cov.x and cov.y are passed, returns average value
 #' of response vectors correlation ('correlation'), significance ('probability') and standard deviation
@@ -31,7 +31,7 @@
 #' Random skewers method compared to the common principal components model.
 #' Genetics and Molecular Biology, 30, 461-469.
 #' @author Diogo Melo, Guilherme Garcia
-#' @seealso \code{\link{KrzCor}},\code{\link{MantelCor}}
+#' @seealso \code{\link{KrzCor}},\code{\link{MantelCor}},\code{\link{DeltaZCorr}}
 #' @examples
 #' c1 <- RandomMatrix(10, 1, 1, 10)
 #' c2 <- RandomMatrix(10, 1, 1, 10)
@@ -39,24 +39,22 @@
 #' RandomSkewers(c1, c2)
 #'
 #' RandomSkewers(list(c1, c2, c3))
-#'
+#'\donttest{
 #' reps <- unlist(lapply(list(c1, c2, c3), MonteCarloRep, sample.size = 10,
-#'                                         RandomSkewers, num.vectors = 100, 
+#'                                         RandomSkewers, num.vectors = 100,
 #'                                         iterations = 10))
 #' RandomSkewers(list(c1, c2, c3), repeat.vector = reps)
 #'
 #' c4 <- RandomMatrix(10)
 #' RandomSkewers(list(c1, c2, c3), c4)
-#' 
+#' }
+#' \dontrun{
 #' #Multiple threads can be used with some foreach backend library, like doMC or doParallel
-#' #library(doParallel)
-#' ##Windows:
-#' #cl <- makeCluster(2)
-#' #registerDoParallel(cl)
-#' ##Mac and Linux:
-#' #registerDoParallel(cores = 2)
-#' #RandomSkewers(list(c1, c2, c3), parallel = TRUE)
-#' 
+#' library(doMC)
+#' registerDoMC(cores = 2)
+#' RandomSkewers(list(c1, c2, c3), parallel = TRUE)
+#' }
+#'
 #' @keywords matrixcomparison
 #' @keywords matrixcorrelation
 #' @keywords randomskewers
@@ -64,7 +62,7 @@ RandomSkewers <- function(cov.x, cov.y, ...) UseMethod("RandomSkewers")
 
 #' @rdname RandomSkewers
 #' @export
-RandomSkewers.default <- function (cov.x, cov.y, num.vectors = 1000, ...) {
+RandomSkewers.default <- function (cov.x, cov.y, num.vectors = 10000, ...) {
   output <- as.numeric(RS(cov.x, cov.y, num.vectors))
   names(output) <- c("correlation","probability","correlation_sd")
   return(output)
@@ -73,7 +71,7 @@ RandomSkewers.default <- function (cov.x, cov.y, num.vectors = 1000, ...) {
 #' @rdname RandomSkewers
 #' @method RandomSkewers list
 #' @export
-RandomSkewers.list <- function (cov.x, cov.y = NULL, num.vectors = 1000, repeat.vector = NULL, parallel = FALSE, ...)
+RandomSkewers.list <- function (cov.x, cov.y = NULL, num.vectors = 10000, repeat.vector = NULL, parallel = FALSE, ...)
 {
   if (is.null (cov.y)) {
     output <- ComparisonMap(cov.x,
@@ -91,14 +89,14 @@ RandomSkewers.list <- function (cov.x, cov.y = NULL, num.vectors = 1000, repeat.
 #' @rdname RandomSkewers
 #' @method RandomSkewers mcmc_sample
 #' @export
-RandomSkewers.mcmc_sample <- function (cov.x, cov.y, num.vectors = 1000, parallel = FALSE, ...)
+RandomSkewers.mcmc_sample <- function (cov.x, cov.y, num.vectors = 10000, parallel = FALSE, ...)
 {
-  if (class (cov.y) == "mcmc_sample") {
+  if (is(cov.y, "mcmc_sample")) {
     n = dim(cov.x)[1]
     if(dim(cov.y)[1] != n) stop("samples must be of same size")
     cov.x <- alply(cov.x, 1)
-    output <- aaply(1:n, 1, function(i) RandomSkewers(cov.x, 
-                                                      cov.y[i,,], 
+    output <- aaply(1:n, 1, function(i) RandomSkewers(cov.x,
+                                                      cov.y[i,,],
                                                       num.vectors = num.vectors)$correlation,
                     .parallel = parallel)
     output <- as.numeric(output)

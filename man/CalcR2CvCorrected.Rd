@@ -8,30 +8,36 @@
 \usage{
 CalcR2CvCorrected(ind.data, ...)
 
-\method{CalcR2CvCorrected}{default}(ind.data, cv.level = 0.06,
-  iterations = 1000, parallel = FALSE, ...)
+\method{CalcR2CvCorrected}{default}(
+  ind.data,
+  cv.level = 0.06,
+  iterations = 1000,
+  parallel = FALSE,
+  ...
+)
 
-\method{CalcR2CvCorrected}{lm}(ind.data, cv.level = 0.06,
-  iterations = 1000, ...)
+\method{CalcR2CvCorrected}{lm}(ind.data, cv.level = 0.06, iterations = 1000, ...)
 }
 \arguments{
-\item{ind.data}{Matrix of indiviual measurments, or ajusted linear model}
+\item{ind.data}{Matrix of individual measurments, or adjusted linear model}
 
-\item{...}{aditional arguments passed to other methods}
+\item{...}{additional arguments passed to other methods}
 
-\item{cv.level}{Coeficient of variation level choosen for integration index ajustment in linear model. Defaults to 0.06.}
+\item{cv.level}{Coefficient of variation level chosen for integration index adjustment in linear model. Defaults to 0.06.}
 
 \item{iterations}{Number of resamples to take}
 
 \item{parallel}{if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.}
 }
 \value{
-List with adjusted integration indexes, fitted models and simulated distributions of integration indexes and mean coeficient of variation.
+List with adjusted integration indexes, fitted models and simulated distributions of integration indexes and mean coefficient of variation.
 }
 \description{
 Calculates the Young correction for integration, using bootstrap resampling
+Warning: CalcEigenVar is strongly preferred and should probably be used in place of this function..
 }
 \examples{
+\dontrun{
 integration.dist = CalcR2CvCorrected(iris[,1:4])
 
 #adjusted values
@@ -39,11 +45,12 @@ integration.dist[[1]]
 
 #ploting models
 library(ggplot2)
-ggplot(integration.dist$dist, aes(r2, mean_cv)) + geom_point() + 
+ggplot(integration.dist$dist, aes(r2, mean_cv)) + geom_point() +
        geom_smooth(method = 'lm', color= 'black') + theme_bw()
-       
-ggplot(integration.dist$dist, aes(eVals_cv, mean_cv)) + geom_point() + 
+
+ggplot(integration.dist$dist, aes(eVals_cv, mean_cv)) + geom_point() +
        geom_smooth(method = 'lm', color= 'black') + theme_bw()
+}
 }
 \references{
 Young, N. M., Wagner, G. P., and Hallgrimsson, B. (2010).

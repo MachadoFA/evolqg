@@ -4,17 +4,23 @@
 \alias{MultivDriftTest}
 \title{Multivariate genetic drift test for 2 populations}
 \usage{
-MultivDriftTest(population1, population2, G, Ne, generations,
-  iterations = 1000)
+MultivDriftTest(
+  population1,
+  population2,
+  G,
+  Ne,
+  generations,
+  iterations = 1000
+)
 }
 \arguments{
-\item{population1}{dataframe with original measurements for the ancestral population}
+\item{population1}{data.frame with original measurements for the ancestral population}
 
-\item{population2}{dataframe with original measurements for the derived population}
+\item{population2}{data.frame with original measurements for the derived population}
 
 \item{G}{ancestral G matrix}
 
-\item{Ne}{effective population size esitmated for the populations}
+\item{Ne}{effective population size estimated for the populations}
 
 \item{generations}{time in generations separating both populations}
 
@@ -35,13 +41,13 @@ change.
 Each trait is estimated independently.
 }
 \examples{
-
+\donttest{
 data(dentus)
 A <- dentus[dentus$species== "A",-5]
 B <- dentus[dentus$species== "B",-5]
 G <- cov(A)
 MultivDriftTest(A, B, G, Ne = 1000, generations = 250)
-
+}
 }
 \references{
 Hohenlohe, P.A ; Arnold, S.J. (2008). MIPod: a hypothesis testing framework for 

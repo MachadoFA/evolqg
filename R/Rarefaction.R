@@ -1,20 +1,20 @@
-#' Rarefaction analysis via ressampling
-#' 
+#' Rarefaction analysis via resampling
+#'
 #' Calculates the repeatability of a statistic of the data, such as
 #' correlation or covariance matrix, via bootstrap resampling with
 #' varying sample sizes, from 2 to the size of the original data.
 #'
 #' Samples of various sizes, with replacement, are taken from the full population, a statistic calculated
-#' and compared to the full population statistic. 
+#' and compared to the full population statistic.
 #'
-#' A specialized ploting function displays the results in publication quality.
-#' @param ind.data Matrix of residuals or indiviual measurments
+#' A specialized plotting function displays the results in publication quality.
+#' @param ind.data Matrix of residuals or individual measurments
 #' @param ComparisonFunc comparison function
-#' @param ... Aditional arguments passed to ComparisonFunc
+#' @param ... Additional arguments passed to ComparisonFunc
 #' @param num.reps number of populations sampled per sample size
 #' @param correlation If TRUE, correlation matrix is used, else covariance matrix. MantelCor always uses correlation matrix.
 #' @param replace If true, samples are taken with replacement
-#' @param parallel if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.
+#' @param parallel if TRUE computations are done in parallel. Some foreach back-end must be registered, like doParallel or doMC.
 #' @details Bootstraping may be misleading with very small sample sizes. Use with caution if original sample sizes are small.
 #' @return returns the mean value of comparisons from samples to original statistic, for all sample sizes.
 #' @author Diogo Melo, Guilherme Garcia
@@ -26,25 +26,25 @@
 #' @importFrom reshape2 melt
 #' @examples
 #' ind.data <- iris[1:50,1:4]
-#' 
-#' results.RS <- Rarefaction(ind.data, PCAsimilarity, num.reps = 5)
-#' results.Mantel <- Rarefaction(ind.data, MatrixCor, correlation = TRUE, num.reps = 5)
-#' results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5)
-#' results.PCA <- Rarefaction(ind.data, PCAsimilarity, num.reps = 5)
-#' 
-#' #Multiple threads can be used with some foreach backend library, like doMC or doParallel
-#' #library(doParallel)
-#' ##Windows:
-#' #cl <- makeCluster(2)
-#' #registerDoParallel(cl)
-#' ##Mac and Linux:
-#' #registerDoParallel(cores = 2)
-#' #results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5, parallel = TRUE)
-#' 
-#' #Easy access
+#'
+#' results.RS <- Rarefaction(ind.data, RandomSkewers, num.reps = 5)
+#' #' #Easy parsing of results
 #' library(reshape2)
 #' melt(results.RS)
 #'
+#' # or :
+#' \donttest{
+#' results.Mantel <- Rarefaction(ind.data, MatrixCor, correlation = TRUE, num.reps = 5)
+#' results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5)
+#' results.PCA <- Rarefaction(ind.data, PCAsimilarity, num.reps = 5)
+#'}
+#'
+#' \dontrun{
+#' #Multiple threads can be used with some foreach backend library, like doMC or doParallel
+#' library(doMC)
+#' registerDoMC(cores = 2)
+#' results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5, parallel = TRUE)
+#'}
 #' @keywords rarefaction
 #' @keywords bootstap
 #' @keywords repeatability
@@ -52,14 +52,14 @@ Rarefaction <- function(ind.data,
                         ComparisonFunc,
                         ...,
                         num.reps = 10,
-                        correlation = FALSE, 
+                        correlation = FALSE,
                         replace = FALSE,
                         parallel = FALSE){
   if(correlation)  {StatFunc <- cor; c2v <- cov2cor
   } else {StatFunc <- cov; c2v <- function(x) x}
   rarefaction.list <- RarefactionStat(ind.data,
                                       StatFunc = StatFunc,
-                                      ComparisonFunc = function(x, y) ComparisonFunc(c2v(x), 
+                                      ComparisonFunc = function(x, y) ComparisonFunc(c2v(x),
                                                                                      c2v(y), ...),
                                       num.reps = num.reps,
                                       parallel = parallel)
@@ -67,12 +67,12 @@ Rarefaction <- function(ind.data,
 }
 
 #' Non-Parametric rarefacted population samples and statistic comparison
-#' 
+#'
 #' Calculates the repeatability of a statistic of the data, such as
 #' correlation or covariance matrix, via resampling with
 #' varying sample sizes, from 2 to the size of the original data.
 #'
-#' Samples of various sizes, without replacement, are taken from the full population, a statistic calculated and compared to the full population statistic. 
+#' Samples of various sizes, without replacement, are taken from the full population, a statistic calculated and compared to the full population statistic.
 #'
 #' A specialized ploting function displays the results in publication quality.
 #' @param ind.data Matrix of residuals or indiviual measurments
@@ -92,24 +92,21 @@ Rarefaction <- function(ind.data,
 #' @importFrom reshape2 melt
 #' @examples
 #' ind.data <- iris[1:50,1:4]
-#' 
+#'
 #' #Can be used to calculate any statistic via Rarefaction, not just comparisons
-#' #Integration, for instanse:
+#' #Integration, for example:
 #' results.R2 <- RarefactionStat(ind.data, cor, function(x, y) CalcR2(y), num.reps = 5)
-#' 
+#'
 #' #Easy access
 #' library(reshape2)
 #' melt(results.R2)
-#' 
-#' #Multiple threads can be used with some foreach backend library, like doMC or doParallel
-#' #library(doParallel)
-#' ##Windows:
-#' #cl <- makeCluster(2)
-#' #registerDoParallel(cl)
-#' ##Mac and Linux:
-#' #registerDoParallel(cores = 2)
-#' #results.R2 <- RarefactionStat(ind.data, cor, function(x, y) CalcR2(y), parallel = TRUE)
 #'
+#'\dontrun{
+#' #Multiple threads can be used with some foreach backend library, like doMC or doParallel
+#' library(doMC)
+#' registerDoMC(cores = 2)
+#' results.R2 <- RarefactionStat(ind.data, cor, function(x, y) CalcR2(y), parallel = TRUE)
+#'}
 #' @keywords rarefaction
 #' @keywords bootstap
 #' @keywords repeatability
@@ -145,21 +142,24 @@ RarefactionStat <- function(ind.data,
 }
 
 #' Plot Rarefaction analysis
-#' 
+#'
 #' A specialized ploting function displays the results from Rarefaction functions in publication quality.
-#' 
+#'
 #' @param comparison.list output from rarefaction functions can be used in ploting
 #' @param y.axis Y axis lable in plot
 #' @param x.axis Y axis lable in plot
+#' @return ggplot2 object with rarefaction plot
 #' @author Diogo Melo, Guilherme Garcia
 #' @seealso \code{\link{BootstrapRep}}
 #' @export
 #' @import plyr
 #' @importFrom ggplot2 ggplot aes_string layer scale_x_continuous scale_y_continuous theme_bw
 #' @importFrom reshape2 melt
+#'
 #' @examples
+#'\donttest{
 #' ind.data <- iris[1:50,1:4]
-#' 
+#'
 #' results.RS <- Rarefaction(ind.data, PCAsimilarity, num.reps = 5)
 #' results.Mantel <- Rarefaction(ind.data, MatrixCor, correlation = TRUE, num.reps = 5)
 #' results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5)
@@ -171,20 +171,18 @@ RarefactionStat <- function(ind.data,
 #' c <- PlotRarefaction(results.KrzCov, "KrzCor")
 #' d <- PlotRarefaction(results.PCA, "PCAsimilarity")
 #'
-#' library(grid)
-#' grid.newpage()
-#' pushViewport(viewport(layout = grid.layout(2, 2)))
-#' vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
-#' print(a, vp = vplayout(1, 1))
-#' print(b, vp = vplayout(1, 2))
-#' print(c, vp = vplayout(2, 1))
-#' print(d, vp = vplayout(2, 2))
-#'
+#' library(cowplot)
+#' plot_grid(a, b, c, d, labels = c("RS",
+#'                                  "Mantel Correlation",
+#'                                  "Krzanowski Correlation",
+#'                                  "PCA Similarity"),
+#'                       scale = 0.9)
+#'}
 #' @keywords rarefaction
 #' @keywords bootstap
 #' @keywords repeatability
 #' @export
-PlotRarefaction <- function(comparison.list, y.axis = "Statistic", 
+PlotRarefaction <- function(comparison.list, y.axis = "Statistic",
                             x.axis = "Number of sampled specimens"){
   plot.df = melt(comparison.list, value.name = 'avg.corr')
   plot.df = as.data.frame(lapply(plot.df, as.numeric))

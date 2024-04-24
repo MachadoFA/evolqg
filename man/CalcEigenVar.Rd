@@ -4,7 +4,13 @@
 \alias{CalcEigenVar}
 \title{Integration measure based on eigenvalue dispersion}
 \usage{
-CalcEigenVar(matrix, sd = FALSE, rel = TRUE, sample = NULL)
+CalcEigenVar(
+  matrix,
+  sd = FALSE,
+  rel = TRUE,
+  sample = NULL,
+  keep.positive = TRUE
+)
 }
 \arguments{
 \item{matrix}{Covariance/correlation matrix}
@@ -18,6 +24,8 @@ theoretical maximum.}
 \item{sample}{Default is NULL. If a integer is provided, function calculates 
 the expected integration value for that particular sample size and returns 
 value as a deviation from the expected.}
+
+\item{keep.positive}{Logical. If TRUE, non-positive eigenvalues are removed from calculation}
 }
 \value{
 Integration index based on eigenvalue dispersion.
@@ -31,11 +39,11 @@ This function quantifies morphological integration as the dispersion
 of eigenvalues in a matrix. It takes either a
 covariance or a correlation matrix as input, and there is no need to discern 
 between them.The output will depend on the combination of parameters 
-specified during imput. 
+specified during input. 
 
 As default, the function calculates the relative eigenvalue variance of the 
 matrix, which expresses the eigenvalue variance as a ratio between the 
-actuall variance and the theoretical maximum for a matrix of the same size 
+actual variance and the theoretical maximum for a matrix of the same size 
 and same amount of variance (same trace), following Machado et al. (2019). If 
 sd=TRUE, the dispersion is measured with the standard deviation of 
 eigenvalues instead of the variance (Pavlicev, 2009). If the sample size is 
@@ -88,10 +96,12 @@ organization of quantitative character variation." Journal of Mathematical
 Biology 21(1):77–95.
 }
 \seealso{
-\code{\link{CalcR2}}, \code{\link{CalcICV}}, \code{\link[PHENIX]{pint}}
+\code{\link{CalcR2}}, \code{\link{CalcICV}}
 }
 \author{
 Fabio Andrade Machado
+
+Diogo Melo
 }
 \keyword{correlation}
 \keyword{eigenvalues}

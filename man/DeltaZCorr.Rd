@@ -10,24 +10,23 @@ DeltaZCorr(cov.x, cov.y, skewers, ...)
 
 \method{DeltaZCorr}{default}(cov.x, cov.y, skewers, ...)
 
-\method{DeltaZCorr}{list}(cov.x, cov.y = NULL, skewers,
-  parallel = FALSE, ...)
+\method{DeltaZCorr}{list}(cov.x, cov.y = NULL, skewers, parallel = FALSE, ...)
 }
 \arguments{
 \item{cov.x}{Single covariance matrix or list of covariance matrices.
-If single matrix is suplied, it is compared to cov.y.
-If list is suplied and no cov.y is suplied, all matrices
+If single matrix is supplied, it is compared to cov.y.
+If list is supplied and no cov.y is supplied, all matrices
 are compared.
-If cov.y is suplied, all matrices in list are compared to it.}
+If cov.y is supplied, all matrices in list are compared to it.}
 
 \item{cov.y}{First argument is compared to cov.y.
 Optional if cov.x is a list.}
 
 \item{skewers}{matrix of column vectors to be used as gradients}
 
-\item{...}{aditional arguments passed to other methods.}
+\item{...}{additional arguments passed to other methods.}
 
-\item{parallel}{if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.}
+\item{parallel}{if TRUE computations are done in parallel. Some foreach back-end must be registered, like doParallel or doMC.}
 }
 \value{
 vector of vector correlations between the expected responses for the two matrices for each supplied vector
@@ -51,7 +50,7 @@ Random skewers method compared to the common principal components model.
 Genetics and Molecular Biology, 30, 461-469.
 }
 \seealso{
-\code{\link{KrzCor}},\code{\link{MantelCor}}
+\code{\link{KrzCor}},\code{\link{MantelCor}},,\code{\link{RandomSkewers}}
 }
 \author{
 Diogo Melo, Guilherme Garcia

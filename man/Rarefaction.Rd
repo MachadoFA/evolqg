@@ -2,17 +2,24 @@
 % Please edit documentation in R/Rarefaction.R
 \name{Rarefaction}
 \alias{Rarefaction}
-\title{Rarefaction analysis via ressampling}
+\title{Rarefaction analysis via resampling}
 \usage{
-Rarefaction(ind.data, ComparisonFunc, ..., num.reps = 10,
-  correlation = FALSE, replace = FALSE, parallel = FALSE)
+Rarefaction(
+  ind.data,
+  ComparisonFunc,
+  ...,
+  num.reps = 10,
+  correlation = FALSE,
+  replace = FALSE,
+  parallel = FALSE
+)
 }
 \arguments{
-\item{ind.data}{Matrix of residuals or indiviual measurments}
+\item{ind.data}{Matrix of residuals or individual measurments}
 
 \item{ComparisonFunc}{comparison function}
 
-\item{...}{Aditional arguments passed to ComparisonFunc}
+\item{...}{Additional arguments passed to ComparisonFunc}
 
 \item{num.reps}{number of populations sampled per sample size}
 
@@ -20,7 +27,7 @@ Rarefaction(ind.data, ComparisonFunc, ..., num.reps = 10,
 
 \item{replace}{If true, samples are taken with replacement}
 
-\item{parallel}{if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.}
+\item{parallel}{if TRUE computations are done in parallel. Some foreach back-end must be registered, like doParallel or doMC.}
 }
 \value{
 returns the mean value of comparisons from samples to original statistic, for all sample sizes.
@@ -34,31 +41,31 @@ varying sample sizes, from 2 to the size of the original data.
 Samples of various sizes, with replacement, are taken from the full population, a statistic calculated
 and compared to the full population statistic.
 
-A specialized ploting function displays the results in publication quality.
+A specialized plotting function displays the results in publication quality.
 
 Bootstraping may be misleading with very small sample sizes. Use with caution if original sample sizes are small.
 }
 \examples{
 ind.data <- iris[1:50,1:4]
 
-results.RS <- Rarefaction(ind.data, PCAsimilarity, num.reps = 5)
-results.Mantel <- Rarefaction(ind.data, MatrixCor, correlation = TRUE, num.reps = 5)
-results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5)
-results.PCA <- Rarefaction(ind.data, PCAsimilarity, num.reps = 5)
-
-#Multiple threads can be used with some foreach backend library, like doMC or doParallel
-#library(doParallel)
-##Windows:
-#cl <- makeCluster(2)
-#registerDoParallel(cl)
-##Mac and Linux:
-#registerDoParallel(cores = 2)
-#results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5, parallel = TRUE)
-
-#Easy access
+results.RS <- Rarefaction(ind.data, RandomSkewers, num.reps = 5)
+#' #Easy parsing of results
 library(reshape2)
 melt(results.RS)
 
+# or :
+\donttest{
+results.Mantel <- Rarefaction(ind.data, MatrixCor, correlation = TRUE, num.reps = 5)
+results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5)
+results.PCA <- Rarefaction(ind.data, PCAsimilarity, num.reps = 5)
+}
+
+\dontrun{
+#Multiple threads can be used with some foreach backend library, like doMC or doParallel
+library(doMC)
+registerDoMC(cores = 2)
+results.KrzCov <- Rarefaction(ind.data, KrzCor, num.reps = 5, parallel = TRUE)
+}
 }
 \seealso{
 \code{\link{BootstrapRep}}

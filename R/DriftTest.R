@@ -1,14 +1,14 @@
 #'Test drift hypothesis
 #'
 #'Given a set of covariance matrices and means for terminals, test the hypothesis
-#'that obseved divergency is larger/smaller than expected by drift alone using a regression of
-#' the between-group varicances on the within-group eigenvalues.
+#'that observed divergence is larger/smaller than expected by drift alone using a regression of
+#' the between-group variances on the within-group eigenvalues.
 #'
 #'@param means list or array of species means being compared. array must have means in the rows.
 #'@param cov.matrix ancestral covariance matrix for all populations
-#'@param show.plot boolean. If TRUE, plot of eigenvalues of ancetral matrix by between group variance is showed.
+#'@param show.plot Logical. If TRUE, plot of eigenvalues of ancestral matrix by between group variance is showed.
 #'@return list of results containing:
-#'@return regresion: the linear regression between the log of the eigenvalues of the ancestral matrix and the log of the between group variance (projected on the eigenvectors of the ancenstral matrix)
+#'@return regression: the linear regression between the log of the eigenvalues of the ancestral matrix and the log of the between group variance (projected on the eigenvectors of the ancestral matrix)
 #'@return coefficient_CI_95: confidence intervals for the regression coefficients
 #'@return log.between_group_variance: log of the between group variance (projected on the ancestral matrix eigenvectors)
 #'@return log.W_eVals: log of the ancestral matrix eigenvalues
@@ -20,7 +20,7 @@
 #'@author Ana Paula Assis, Diogo Melo
 #'@export
 #'@import plyr
-#'@importFrom ggplot2 ggplot geom_text geom_smooth labs theme_bw aes_string
+#'@importFrom ggplot2 ggplot geom_text geom_smooth labs theme_bw 
 #'@importFrom stats na.omit
 #'@examples
 #'
@@ -47,8 +47,8 @@ DriftTest <- function(means, cov.matrix, show.plot=TRUE)
   reg.plot <- ggplot(data.frame(log.B_variance, 
                                 log.W_eVals, 
                                 names = 1:(dim(mean.array)[2])), 
-                     aes_string('log.W_eVals', 'log.B_variance')) + 
-              geom_text(aes_string(label = 'names')) + 
+                     aes(log.W_eVals, log.B_variance)) + 
+              geom_text(aes(label = names)) + 
               geom_smooth(method = "lm", color = 'black') + 
               labs(x = "log(W Eigenvalues)", y = "log(B variances)") + theme_bw()
   if(show.plot) print(reg.plot)
@@ -111,6 +111,7 @@ TreeDriftTest <- function(tree, mean.list, cov.matrix.list, sample.sizes = NULL)
 #'@param test.list Output from TreeDriftTest
 #'@param tree phylogenetic tree
 #'@param ... adition arguments to plot
+#'@return No return value, called for plot side effects
 #'@seealso DriftTest TreeDriftTest
 #'@importFrom ape nodelabels
 #'@author Diogo Melo

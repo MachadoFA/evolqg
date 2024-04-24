@@ -6,10 +6,10 @@
 #'divergence expected and compare it to the observed magnitude of morphological 
 #'change. 
 #'
-#'@param population1 dataframe with original measurements for the ancestral population
-#'@param population2 dataframe with original measurements for the derived population
+#'@param population1 data.frame with original measurements for the ancestral population
+#'@param population2 data.frame with original measurements for the derived population
 #'@param G ancestral G matrix 
-#'@param Ne effective population size esitmated for the populations
+#'@param Ne effective population size estimated for the populations
 #'@param generations time in generations separating both populations
 #'@param iterations number of simulations to perform
 #'@note Each trait is estimated independently. 
@@ -18,13 +18,13 @@
 #'@export
 #'@importFrom mvtnorm rmvnorm
 #'@examples
-#'
+#'\donttest{
 #'data(dentus)
 #'A <- dentus[dentus$species== "A",-5]
 #'B <- dentus[dentus$species== "B",-5]
 #'G <- cov(A)
 #'MultivDriftTest(A, B, G, Ne = 1000, generations = 250)
-#'
+#'}
 #'@references Hohenlohe, P.A ; Arnold, S.J. (2008). MIPod: a hypothesis testing framework for 
 #'microevolutionary inference from patterns of divergence. 
 #'American Naturalist, 171(3),

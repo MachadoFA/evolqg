@@ -6,5 +6,5 @@
 \alias{evolqg-package}
 \title{EvolQG}
 \description{
-EvolQG
+The package for evolutionary quantitative genetics.
 }

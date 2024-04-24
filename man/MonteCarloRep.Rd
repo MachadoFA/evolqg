@@ -4,8 +4,15 @@
 \alias{MonteCarloRep}
 \title{Parametric repeatabilities with covariance or correlation matrices}
 \usage{
-MonteCarloRep(cov.matrix, sample.size, ComparisonFunc, ...,
-  iterations = 1000, correlation = FALSE, parallel = FALSE)
+MonteCarloRep(
+  cov.matrix,
+  sample.size,
+  ComparisonFunc,
+  ...,
+  iterations = 1000,
+  correlation = FALSE,
+  parallel = FALSE
+)
 }
 \arguments{
 \item{cov.matrix}{Covariance matrix.}
@@ -38,24 +45,26 @@ Since this function uses multivariate normal model to generate populations, only
 cov.matrix <- RandomMatrix(5, 1, 1, 10)
 
 MonteCarloRep(cov.matrix, sample.size = 30, RandomSkewers, iterations = 20)
+
+\donttest{
 MonteCarloRep(cov.matrix, sample.size = 30, RandomSkewers, num.vectors = 100, 
               iterations = 20, correlation = TRUE)
 MonteCarloRep(cov.matrix, sample.size = 30, MatrixCor, correlation = TRUE)
 MonteCarloRep(cov.matrix, sample.size = 30, KrzCor, iterations = 20)
 MonteCarloRep(cov.matrix, sample.size = 30, KrzCor, correlation = TRUE)
 
+
 #Creating repeatability vector for a list of matrices
 mat.list <- RandomMatrix(5, 3, 1, 10)
 laply(mat.list, MonteCarloRep, 30, KrzCor, correlation = TRUE)
+}
 
-##Multiple threads can be used with doMC library
-#library(doParallel)
-##Windows:
-#cl <- makeCluster(2)
-#registerDoParallel(cl)
-##Mac and Linux:
-#registerDoParallel(cores = 2)
-#MonteCarloRep(cov.matrix, 30, RandomSkewers, iterations = 100, parallel = TRUE)
+\dontrun{
+#Multiple threads can be used with some foreach backend library, like doMC or doParallel
+library(doMC)
+registerDoMC(cores = 2)
+MonteCarloRep(cov.matrix, 30, RandomSkewers, iterations = 100, parallel = TRUE)
+}
 }
 \seealso{
 \code{\link{BootstrapRep}}, \code{\link{AlphaRep}}
