@@ -13,7 +13,8 @@
 #' @param rep number of bootstrap samples to be made
 #' @param MCMCsamples number of MCMCsamples for each P-matrix posterior distribution.
 #' @param parallel if TRUE computations are done in parallel. Some foreach backend must be registered, like doParallel or doMC.
-#' @return A list with the observed and randomized eigenvalue distributions for the posterior Krz Subspace comparisons.
+#' @param scale Default to "none". If "cor", compare correlation matrices, if "mean" scale covariance matrices by the mean trait value
+#' @return A list with the average eigenvector, and observed and randomized eigenvalue distributions for the posterior Krz Subspace comparisons.
 #' @references 
 #' Aguirre, J. D., E. Hine, K. McGuigan, and M. W. Blows. 2013. “Comparing G: multivariate analysis of genetic variation in multiple populations.” Heredity 112 (February): 21–29.
 #'
@@ -32,8 +33,21 @@
 #' krz_df = KrzSubspaceDataFrame(krz_comparsion)
 #' PlotKrzSubspace(krz_df)
 #' }
-KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE){
+KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE, scale="none"){
   P_list = laply(x, function(x) BayesianCalculateMatrix(x, samples = MCMCsamples)$Ps)
+  if(scale=="cor") llply(P_list, cov2cor)
+  if(scale=="mean") {
+    for(i in seq_along(P_list)){
+      lma<-x[[i]]
+      Mx<-P_list[[i]]
+      ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
+      Mx$MAP<-Mx$MAP/ms
+      Mx$MLE<-Mx$MLE/ms
+      Mx$P<-Mx$P/ms
+      for(j in seq_along(Mx)) Mx$Ps[j,,]<-Mx$Ps[j,,]/ms
+      P_list[[i]]<-Mx
+    }
+  }
   P_list = aperm(P_list, c(3, 4, 1, 2))
   res_list = lapply(x, residuals)
   n_list = sapply(res_list, nrow)
@@ -50,8 +64,24 @@ KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE
                        function(n) 
                          lm(residuals[sample(1:nrow(residuals), n),]~1))
     random_P_list = laply(random_lm, 
-                          function(x) 
-                             BayesianCalculateMatrix(x, samples = samples)$Ps)
+                          function(x) {
+                            P_listr<-BayesianCalculateMatrix(x, samples = samples)$Ps
+                            if(scale=="cor") llply(P_listr, cov2cor)
+                            if(scale=="mean") {
+                              for(i in seq_along(P_listr)){
+                                lma<-x[[i]]
+                                Mx<-P_listr[[i]]
+                                ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
+                                Mx$MAP<-Mx$MAP/ms
+                                Mx$MLE<-Mx$MLE/ms
+                                Mx$P<-Mx$P/ms
+                                for(j in seq_along(Mx)) Mx$Ps[j,,]<-Mx$Ps[j,,]/ms
+                                P_listr[[i]]<-Mx
+                              }
+                            }
+                            P_listr
+                          })
+                             
     random_P_list = aperm(random_P_list, c(3, 4, 1, 2))
     Hs = llply(
       alply(random_P_list, 4, function(x) alply(x, 3)), 
@@ -66,7 +96,7 @@ KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE
   rand = laply(1:rep, function(i) randomKrz(MCMCsamples), .parallel = parallel)
 
   MCMC.H.val.random = do.call(rbind, alply(rand, 1, identity))
-  list(observed = MCMC.H.val, random = MCMC.H.val.random)
+  list(observed = MCMC.H.val, random = MCMC.H.val.random, vectors= avgH.vec)
 }
 
 #' Extract confidence intervals from KrzSubspaceBootstrap
