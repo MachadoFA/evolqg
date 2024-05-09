@@ -36,18 +36,13 @@
 KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE, scale="none"){
   P_list = laply(x, function(x) BayesianCalculateMatrix(x, samples = MCMCsamples)$Ps)
   if(scale=="cor") P_list<-aaply(P_list,1:2, cov2cor)
-  # if(scale=="mean") {
-  #   for(i in seq_along(P_list)){
-  #     lma<-x[[i]]
-  #     Mx<-P_list[[i]]
-  #     ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
-  #     Mx$MAP<-Mx$MAP/ms
-  #     Mx$MLE<-Mx$MLE/ms
-  #     Mx$P<-Mx$P/ms
-  #     for(j in seq_along(Mx)) Mx$Ps[j,,]<-Mx$Ps[j,,]/ms
-  #     P_list[[i]]<-Mx
-  #   }
-  # }
+  if(scale=="mean") {
+    for(i in seq_along(P_list[,1,1,1])){
+      lma<-x[[i]]
+      ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
+      for(j in seq_along(P_list[1,,1,1])) P_list[i,j,,]<-P_list[i,j,,]/ms
+    }
+  }
   P_list = aperm(P_list, c(3, 4, 1, 2))
   res_list = lapply(x, residuals)
   n_list = sapply(res_list, nrow)
@@ -67,18 +62,12 @@ KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE
                           function(x) {
                             P_listr<-BayesianCalculateMatrix(x, samples = samples)$Ps
                             if(scale=="cor") P_listr<-aaply(P_listr,1, cov2cor)
-                            # if(scale=="mean") {
-                            #   for(i in seq_along(P_listr)){
-                            #     lma<-x[[i]]
-                            #     Mx<-P_listr[[i]]
-                            #     ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
-                            #     Mx$MAP<-Mx$MAP/ms
-                            #     Mx$MLE<-Mx$MLE/ms
-                            #     Mx$P<-Mx$P/ms
-                            #     for(j in seq_along(Mx)) Mx$Ps[j,,]<-Mx$Ps[j,,]/ms
-                            #     P_listr[[i]]<-Mx
-                            #   }
-                            # }
+                            if(scale=="mean") {
+                              ms<-x$coefficients[1,]%*%t(x$coefficients[1,])
+                              for(i in seq_along(P_listr[,1,1])){
+                                P_listr[i,,]<-P_listr[i,,]/ms
+                              }
+                            }
                             P_listr
                           })
                              
