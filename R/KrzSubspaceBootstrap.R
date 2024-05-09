@@ -35,19 +35,19 @@
 #' }
 KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE, scale="none"){
   P_list = laply(x, function(x) BayesianCalculateMatrix(x, samples = MCMCsamples)$Ps)
-  if(scale=="cor") llply(P_list, cov2cor)
-  if(scale=="mean") {
-    for(i in seq_along(P_list)){
-      lma<-x[[i]]
-      Mx<-P_list[[i]]
-      ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
-      Mx$MAP<-Mx$MAP/ms
-      Mx$MLE<-Mx$MLE/ms
-      Mx$P<-Mx$P/ms
-      for(j in seq_along(Mx)) Mx$Ps[j,,]<-Mx$Ps[j,,]/ms
-      P_list[[i]]<-Mx
-    }
-  }
+  if(scale=="cor") P_list<-aaply(P_list,1:2, cov2cor)
+  # if(scale=="mean") {
+  #   for(i in seq_along(P_list)){
+  #     lma<-x[[i]]
+  #     Mx<-P_list[[i]]
+  #     ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
+  #     Mx$MAP<-Mx$MAP/ms
+  #     Mx$MLE<-Mx$MLE/ms
+  #     Mx$P<-Mx$P/ms
+  #     for(j in seq_along(Mx)) Mx$Ps[j,,]<-Mx$Ps[j,,]/ms
+  #     P_list[[i]]<-Mx
+  #   }
+  # }
   P_list = aperm(P_list, c(3, 4, 1, 2))
   res_list = lapply(x, residuals)
   n_list = sapply(res_list, nrow)
@@ -66,19 +66,19 @@ KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE
     random_P_list = laply(random_lm, 
                           function(x) {
                             P_listr<-BayesianCalculateMatrix(x, samples = samples)$Ps
-                            if(scale=="cor") llply(P_listr, cov2cor)
-                            if(scale=="mean") {
-                              for(i in seq_along(P_listr)){
-                                lma<-x[[i]]
-                                Mx<-P_listr[[i]]
-                                ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
-                                Mx$MAP<-Mx$MAP/ms
-                                Mx$MLE<-Mx$MLE/ms
-                                Mx$P<-Mx$P/ms
-                                for(j in seq_along(Mx)) Mx$Ps[j,,]<-Mx$Ps[j,,]/ms
-                                P_listr[[i]]<-Mx
-                              }
-                            }
+                            if(scale=="cor") P_listr<-aaply(P_listr,1, cov2cor)
+                            # if(scale=="mean") {
+                            #   for(i in seq_along(P_listr)){
+                            #     lma<-x[[i]]
+                            #     Mx<-P_listr[[i]]
+                            #     ms<-lma$coefficients[1,]%*%t(lma$coefficients[1,])
+                            #     Mx$MAP<-Mx$MAP/ms
+                            #     Mx$MLE<-Mx$MLE/ms
+                            #     Mx$P<-Mx$P/ms
+                            #     for(j in seq_along(Mx)) Mx$Ps[j,,]<-Mx$Ps[j,,]/ms
+                            #     P_listr[[i]]<-Mx
+                            #   }
+                            # }
                             P_listr
                           })
                              
