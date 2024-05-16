@@ -34,6 +34,7 @@
 #' PlotKrzSubspace(krz_df)
 #' }
 KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE, scale="none"){
+  
   P_list = laply(x, function(x) BayesianCalculateMatrix(x, samples = MCMCsamples)$Ps)
   if(scale=="cor") P_list<-aaply(P_list,1:2, cov2cor)
   if(scale=="mean") {
@@ -48,7 +49,9 @@ KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE
   n_list = sapply(res_list, nrow)
 
   residuals = do.call(rbind, res_list)
-
+  GrMean<- laply(x, function(y) y$coefficients[1,]) %>% colMeans
+  residuals<- sweep(residuals,2,GrMean,"+")
+  
   Hs = llply(alply(P_list, 4, function(x) alply(x, 3)), function(x) KrzSubspace(x, 3)$H)
   avgH = Reduce("+", Hs)/length(Hs)
   avgH.vec <- eigen(avgH)$vectors
@@ -85,7 +88,7 @@ KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE
   rand = laply(1:rep, function(i) randomKrz(MCMCsamples), .parallel = parallel)
 
   MCMC.H.val.random = do.call(rbind, alply(rand, 1, identity))
-  list(observed = MCMC.H.val, random = MCMC.H.val.random, vectors= avgH.vec)
+  list(observed = MCMC.H.val, random = MCMC.H.val.random)
 }
 
 #' Extract confidence intervals from KrzSubspaceBootstrap
