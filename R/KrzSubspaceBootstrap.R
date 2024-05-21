@@ -34,7 +34,6 @@
 #' PlotKrzSubspace(krz_df)
 #' }
 KrzSubspaceBootstrap = function(x, rep = 1, MCMCsamples = 1000, parallel = FALSE, scale="none"){
-  
   P_list = laply(x, function(x) BayesianCalculateMatrix(x, samples = MCMCsamples)$Ps)
   if(scale=="cor") P_list<-aaply(P_list,1:2, cov2cor)
   if(scale=="mean") {
