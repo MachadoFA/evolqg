@@ -1,8 +1,9 @@
 #' Remove Size Variation
 #'
-#' Removes first principal component effect in a covariance matrix.
+#' Removes the effect of a size vector in a covariance matrix.
 #'
 #' @param cov.matrix Covariance matrix
+#' @param isometric If TRUE, the isometric size vector of is removed. If FALSE (default), the first principal component is removed.
 #' @details Function sets the first eigenvalue to zero.
 #' @return Altered covariance matrix with no variation on former first principal component
 #' @author Diogo Melo, Guilherme Garcia, Fabio Machado
